@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
@@ -17,12 +17,36 @@ import java.util.concurrent.ThreadLocalRandom;
 public class TransactionService {
 
     public List<Transaction> listTransactions(final int idUser, final int year, final int month) {
-        final String description = generateDescription();
-        final long date = generateDate(month, year);
-        final Transaction transaction = new Transaction();
-        transaction.setDate(date);
-        transaction.setDescription(description);
-        return Arrays.asList(transaction);
+        List<Transaction> finalListOfTransactions = new ArrayList<>();
+        final int transactionListSize = transactionListSize(month, findFirstDigit(idUser, 0));
+
+        for (int index = 0; index<transactionListSize; index++) {
+            final Transaction transaction = new Transaction();
+            transaction.setDate(generateDate(month, year));
+            transaction.setDescription(generateDescription());
+            transaction.setValue(generateValue(idUser, index, month));
+            finalListOfTransactions.add(transaction);
+        }
+
+        return finalListOfTransactions;
+    }
+
+    private int transactionListSize(int month, int firstDigit) {
+        return month * firstDigit;
+    }
+
+    private int findFirstDigit(final int idUser, int firstDigit) {
+        if(idUser > 0) {
+            if(idUser/10 == 0) {
+                firstDigit = idUser;
+            }
+            firstDigit = findFirstDigit(idUser/10, firstDigit);
+        }
+        return firstDigit;
+    }
+
+    private Integer generateValue(final int idUser, final int index, final int month){
+        return Integer.valueOf(String.format("%s%s%s", idUser,index,month));
     }
 
     private String generateDescription() {
@@ -49,11 +73,8 @@ public class TransactionService {
         calendar.set(Calendar.YEAR, year);
 
         final int maxDaysAtMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-
         final LocalDate startMonth = LocalDate.of(year, month, 1);
-
         final LocalDate endMonth = LocalDate.of(year, month, maxDaysAtMonth);
-
         final long randomEpochDay = ThreadLocalRandom
                 .current()
                 .nextLong(startMonth.toEpochDay(), endMonth.toEpochDay());
