@@ -1,15 +1,13 @@
 package com.br.adriane.guiabolso.mocktransacoes.rest.resource;
 
+import com.br.adriane.guiabolso.mocktransacoes.exceptions.IdUserValueException;
 import com.br.adriane.guiabolso.mocktransacoes.exceptions.TransactionValueException;
 import com.br.adriane.guiabolso.mocktransacoes.rest.response.Transaction;
 import com.br.adriane.guiabolso.mocktransacoes.service.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -33,8 +31,8 @@ public class TransactionResource {
         log.info("M=listTransactionsWithParameters, I=Iniciada requisição para listagem de transações");
         try {
             return transactionService.listTransactions(idUser,year, month);
-        } catch (TransactionValueException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (TransactionValueException | IdUserValueException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }

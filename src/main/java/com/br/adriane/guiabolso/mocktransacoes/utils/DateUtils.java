@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Calendar;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DateUtils {
@@ -13,17 +12,12 @@ public class DateUtils {
         throw new IllegalStateException("É uma classe utilitária");
     }
 
-    public static long generateDate(final int month, final int year) {
-        final Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.MONTH, month);
-        calendar.set(Calendar.YEAR, year);
+    public static long generateDate(final int month, final int year, int index) {
+        final LocalDate startMonth = LocalDate.now().withYear(year).withMonth(month);
 
-        final int maxDaysAtMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-        final LocalDate startMonth = LocalDate.of(year, month, 1);
-        final LocalDate endMonth = LocalDate.of(year, month, maxDaysAtMonth);
         final long randomEpochDay = ThreadLocalRandom
                 .current()
-                .nextLong(startMonth.toEpochDay(), endMonth.toEpochDay());
+                .nextLong(startMonth.toEpochDay());
 
         final LocalDate randomLocalDate = LocalDate.ofEpochDay(randomEpochDay);
 
